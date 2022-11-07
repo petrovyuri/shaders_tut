@@ -27,21 +27,38 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<FragmentProgram>(
-      future: _initShader(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final shader = snapshot.data!.fragmentShader()
-            ..setFloat(0, updateTime)
-            ..setFloat(1, 300)
-            ..setFloat(2, 300);
-          return CustomPaint(painter: AnimRect(shader));
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: FutureBuilder<FragmentProgram>(
+          future: _initShader(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ShaderMask(
+                shaderCallback: (bounds) {
+                  return snapshot.data!.fragmentShader()
+                    ..setFloat(0, updateTime)
+                    ..setFloat(1, bounds.height)
+                    ..setFloat(2, bounds.width);
+                },
+                child: const Center(
+                    child: Text(
+                  "TEST",
+                  style: TextStyle(
+                    fontSize: 150,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
+                )),
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 
