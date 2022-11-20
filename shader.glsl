@@ -1,5 +1,7 @@
 uniform float iTime;
 uniform vec2 iResolution;
+uniform float iMove;
+uniform float iStop;
 out vec4 fragColor;
 
 #extension GL_OES_standard_derivatives : enable
@@ -53,6 +55,9 @@ float fbm(vec3 p)
 
 vec3 camera(float time)
 {
+    if(iMove == 1){
+         return vec3(1, 5000. + 1500. * sin(0.5 * time), 6000.0 * time);
+    }
     return vec3(5000.0 * sin(1.0 * time), 5000. + 1500. * sin(0.5 * time), 6000.0 * time);
 }
 
@@ -62,7 +67,14 @@ void main()
     uv.x *= iResolution.x / iResolution.y;
 
     float time = (iTime + 13.5 + 44.) * 1.0;
-    vec3 campos = camera(time);
+     vec3 campos;
+
+    if(iStop == 1){
+campos = camera(1);
+    } else {
+       campos = camera(time);
+    }
+
     vec3 camtar = camera(time + 0.4);
 
     vec3 front = normalize(camtar - campos);

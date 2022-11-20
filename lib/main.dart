@@ -15,6 +15,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   var updateTime = 0.0;
+  var _move = 0.0;
+  var _stop = 0.0;
 
   @override
   void initState() {
@@ -34,22 +36,42 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
           future: _initShader(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return ShaderMask(
-                shaderCallback: (bounds) {
-                  return snapshot.data!.fragmentShader()
-                    ..setFloat(0, updateTime)
-                    ..setFloat(1, bounds.height)
-                    ..setFloat(2, bounds.width);
-                },
-                child: const Center(
-                    child: Text(
-                  "TEST",
-                  style: TextStyle(
-                    fontSize: 150,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
+              final shader = snapshot.data!.fragmentShader()
+                ..setFloat(0, updateTime)
+                ..setFloat(1, 300)
+                ..setFloat(2, 300)
+                ..setFloat(3, _move)
+                ..setFloat(4, _stop);
+              return Stack(
+                children: [
+                  CustomPaint(painter: AnimRect(shader)),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        if (_move == 1) {
+                          _move = 0.0;
+                        } else {
+                          _move = 1;
+                        }
+                        setState(() {});
+                      },
+                    ),
                   ),
-                )),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        if (_stop == 1) {
+                          _stop = 0.0;
+                        } else {
+                          _stop = 1;
+                        }
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
               );
             } else {
               return const Center(
